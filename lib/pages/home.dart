@@ -1,6 +1,8 @@
 import 'package:fitness/models/category_model.dart';
 import 'package:fitness/models/diet_model.dart';
 import 'package:fitness/models/popular_model.dart';
+import 'package:fitness/pages/login.dart';
+import 'package:fitness/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -15,6 +17,13 @@ class _HomePageState extends State<HomePage> {
   List<CategoryModel> categories = [];
   List<DietModel> diets = [];
   List<PopularDietsModel> popularDiets = [];
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _getInitialInfo();
+  }
 
   void _getInitialInfo() {
     categories = CategoryModel.getCategories();
@@ -22,9 +31,22 @@ class _HomePageState extends State<HomePage> {
     popularDiets = PopularDietsModel.getPopularDiets();
   }
 
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilePage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    _getInitialInfo();
     return Scaffold(
       appBar: appBar(),
       backgroundColor: Colors.white,
@@ -54,18 +76,19 @@ class _HomePageState extends State<HomePage> {
               ListView.separated(
                 itemCount: popularDiets.length,
                 shrinkWrap: true,
-                separatorBuilder: (context, index) => SizedBox(height: 25,),
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20
-                ),
+                separatorBuilder: (context, index) => SizedBox(height: 25),
+                padding: EdgeInsets.only(left: 20, right: 20),
                 itemBuilder: (context, index) {
                   return Container(
                     height: 100,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Image.asset(popularDiets[index].iconPath, width: 65, height: 65,),
+                        Image.asset(
+                          popularDiets[index].iconPath,
+                          width: 65,
+                          height: 65,
+                        ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black,
-                                fontSize: 16
+                                fontSize: 16,
                               ),
                             ),
                             Text(
@@ -84,33 +107,40 @@ class _HomePageState extends State<HomePage> {
                                   popularDiets[index].duration +
                                   ' | ' +
                                   popularDiets[index].calorie,
-                                  style: TextStyle(
-                                    color: Color(0xff786F72),
-                                    fontWeight: FontWeight.w400
-                                  ),
-                            )
+                              style: TextStyle(
+                                color: Color(0xff786F72),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                           ],
                         ),
                         GestureDetector(
                           onTap: () {},
-                          child: SvgPicture.asset('assets/icons/button.svg',
-                          width: 30,
-                          height: 30,
+                          child: SvgPicture.asset(
+                            'assets/icons/button.svg',
+                            width: 30,
+                            height: 30,
                           ),
-                        )
+                        ),
                       ],
                     ),
                     decoration: BoxDecoration(
-                      color: popularDiets[index].boxIsSelected ? Colors.white : Colors.transparent,
+                      color:
+                          popularDiets[index].boxIsSelected
+                              ? Colors.white
+                              : Colors.transparent,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: popularDiets[index].boxIsSelected ? [
-                        BoxShadow(
-                          color: Color(0xff1D1617).withOpacity(0.07),
-                          offset: Offset(0, 10),
-                          blurRadius: 40,
-                          spreadRadius: 0
-                        )
-                      ] : []
+                      boxShadow:
+                          popularDiets[index].boxIsSelected
+                              ? [
+                                BoxShadow(
+                                  color: Color(0xff1D1617).withOpacity(0.07),
+                                  offset: Offset(0, 10),
+                                  blurRadius: 40,
+                                  spreadRadius: 0,
+                                ),
+                              ]
+                              : [],
                     ),
                   );
                 },
@@ -118,6 +148,32 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           SizedBox(height: 40),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0, // Home tab
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfilePage()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          }
+        },
+        selectedItemColor: Colors.pinkAccent,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
         ],
       ),
     );
@@ -247,7 +303,7 @@ class _HomePageState extends State<HomePage> {
             itemCount: categories.length,
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) => SizedBox(width: 25),
-            padding: EdgeInsets.only(left: 20), 
+            padding: EdgeInsets.only(left: 20),
             itemBuilder: (context, index) {
               return Container(
                 width: 100,
